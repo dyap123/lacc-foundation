@@ -1,0 +1,5 @@
+{
+  "backend": "PASTE_YOUR_APPS_SCRIPT_URL_HERE",
+  "spreadsheet_id": "1WvoAMqUGnrsa1q7Ck6PZhwx5j0DD6inIKaYZZk0etCU",
+  "_note": "After deploying the Apps Script Web App, paste the deployment URL into 'backend' and commit + push this file."
+}

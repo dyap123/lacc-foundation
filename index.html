@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LACC Foundation Forecast</title>
+<link rel="stylesheet" href="foundation.css">
+</head>
+<body>
+
+<header class="fnd-toolbar">
+  <div class="fnd-title">Foundation Map · LACC</div>
+  <div class="fnd-stats">
+    <div class="fnd-stat fnd-stat-tot"><span class="fnd-stat-label">TOTAL</span><span class="fnd-stat-value" id="fndStatTot">—</span></div>
+    <div class="fnd-stat fnd-stat-ready"><span class="fnd-stat-label">READY</span><span class="fnd-stat-value" id="fndStatReady">—</span></div>
+    <div class="fnd-stat fnd-stat-mon"><span class="fnd-stat-label">MONITORING</span><span class="fnd-stat-value" id="fndStatMon">—</span></div>
+    <div class="fnd-stat fnd-stat-need"><span class="fnd-stat-label">NEEDS INPUT</span><span class="fnd-stat-value" id="fndStatNeed">—</span></div>
+    <button class="fnd-refresh" onclick="window.foundation && window.foundation.refresh(true)">Refresh</button>
+  </div>
+</header>
+
+<main class="fnd-shell">
+  <div class="fnd-canvas-wrap" id="fndCanvasWrap">
+    <div class="fnd-canvas" id="fndCanvas">
+      <img id="fndImage" alt="Foundation sequence">
+      <svg id="fndOverlay" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+  </div>
+  <aside class="fnd-panel" id="fndPanel" aria-hidden="true">
+    <div class="fnd-panel-head">
+      <div>
+        <h3 id="fndPanelTitle">—</h3>
+        <span class="fnd-panel-status" id="fndPanelStatus">—</span>
+      </div>
+      <button class="fnd-close" onclick="window.foundation && window.foundation.closePanel()">&times;</button>
+    </div>
+    <div class="fnd-panel-body" id="fndPanelBody"></div>
+    <div class="fnd-panel-foot">
+      <button class="fnd-btn fnd-btn-secondary" onclick="window.foundation && window.foundation.closePanel()">Cancel</button>
+      <button class="fnd-btn fnd-btn-save" id="fndSaveBtn" onclick="window.foundation && window.foundation.save()">Save</button>
+    </div>
+  </aside>
+</main>
+
+<div class="fnd-tooltip" id="fndTooltip" style="display:none"></div>
+
+<button class="fnd-alf-fab" id="fndAlfFab" title="Ask Alfred about the foundation"
+        onclick="window.foundation && window.foundation.toggleAlfred()">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+</button>
+<div class="fnd-alf-panel" id="fndAlfPanel">
+  <div class="fnd-alf-head">
+    <div>
+      <h4>Alfred</h4>
+      <div class="fnd-alf-sub" id="fndAlfSub">Foundation assistant · MiniMax</div>
+    </div>
+    <button class="fnd-close" onclick="window.foundation && window.foundation.toggleAlfred(false)">&times;</button>
+  </div>
+  <div class="fnd-alf-msgs" id="fndAlfMsgs"></div>
+  <div class="fnd-alf-input">
+    <input id="fndAlfText" placeholder="Ask about a section…" autocomplete="off">
+    <button onclick="window.foundation && window.foundation.alfSend()">Send</button>
+  </div>
+</div>
+
+<div class="fnd-config-banner" id="fndConfigBanner" style="display:none">
+  <strong>Backend not configured.</strong> Edit <code>config.json</code> with your Apps Script Web App URL.
+</div>
+
+<script src="foundation.js" defer></script>
+</body>
+</html>

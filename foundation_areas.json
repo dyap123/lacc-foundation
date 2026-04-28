@@ -1,0 +1,64 @@
+{
+  "_image": {
+    "path": "/static/foundation_sequence.png",
+    "width": 3278,
+    "height": 3541,
+    "note": "Polygon coords are in image pixel space. Refine the [[x,y], ...] points in this file to match the actual sequence outlines from the drawing."
+  },
+  "areas": [
+    {
+      "section_id": "1A",
+      "label": "Sequence 1 Area A",
+      "interactive": true,
+      "polygon": [[1750, 380], [2050, 380], [2050, 780], [1750, 780]]
+    },
+    {
+      "section_id": "1B",
+      "label": "Sequence 1 Area B",
+      "interactive": true,
+      "polygon": [[1750, 800], [2200, 800], [2200, 2180], [1750, 2180]]
+    },
+    {
+      "section_id": "2A",
+      "label": "Sequence 2 Area A",
+      "interactive": true,
+      "polygon": [[1480, 2240], [2300, 2240], [2300, 3320], [1480, 3320]]
+    },
+    {
+      "section_id": "3A",
+      "label": "Sequence 3 Area A",
+      "interactive": true,
+      "polygon": [[2680, 2160], [3200, 2160], [3200, 3030], [2680, 3030]]
+    },
+    {
+      "section_id": "3B",
+      "label": "Sequence 3 Area B",
+      "interactive": true,
+      "polygon": [[2880, 800], [3200, 800], [3200, 1530], [2880, 1530]]
+    },
+    {
+      "section_id": "3C",
+      "label": "Sequence 3 Area C",
+      "interactive": true,
+      "polygon": [[2050, 120], [3200, 120], [3200, 800], [2050, 800]]
+    },
+    {
+      "section_id": "3D",
+      "label": "Sequence 3 Area D — laydown",
+      "interactive": true,
+      "polygon": [[2580, 1530], [3200, 1530], [3200, 2160], [2580, 2160]]
+    },
+    {
+      "section_id": "0",
+      "label": "Already poured (zone 0)",
+      "interactive": false,
+      "polygon": [[300, 130], [1750, 130], [1750, 780], [300, 780]]
+    },
+    {
+      "section_id": "4",
+      "label": "Already poured (zone 4)",
+      "interactive": false,
+      "polygon": [[300, 780], [1750, 780], [1750, 1100], [300, 1100]]
+    }
+  ]
+}
