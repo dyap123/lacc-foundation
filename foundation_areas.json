@@ -1,6 +1,6 @@
 {
   "_image": {
-    "path": "/static/foundation_sequence.png",
+    "path": "foundation_sequence.png",
     "width": 3278,
     "height": 3541,
     "note": "Polygon coords are in image pixel space. Refine the [[x,y], ...] points in this file to match the actual sequence outlines from the drawing."
