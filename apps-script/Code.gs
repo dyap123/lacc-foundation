@@ -43,11 +43,28 @@ function doGet(e) {
 }
 
 function doPost(e) {
-  const body = JSON.parse(e.postData.contents || '{}');
-  const action = body.action || '';
+  // Body can arrive in different shapes depending on how the client posts:
+  //   - JSON in postData.contents (browser fetch with text/plain or json)
+  //   - URL-encoded form fields in e.parameter (older curl/forms)
+  //   - empty (which we still treat as a metrics ping)
+  let body = {};
   try {
-    if (action === 'update') return _json(handleUpdate_(body));
-    if (action === 'alfred') return _json(handleAlfred_(body));
+    if (e && e.postData && e.postData.contents) {
+      body = JSON.parse(e.postData.contents);
+    } else if (e && e.parameter) {
+      body = e.parameter;
+      // 'fields' might be a JSON-encoded string in form mode
+      if (typeof body.fields === 'string') {
+        try { body.fields = JSON.parse(body.fields); } catch (_) { /* leave as-is */ }
+      }
+    }
+  } catch (parseErr) {
+    return _json({error: 'bad request body: ' + parseErr});
+  }
+  const action = body.action || (e && e.parameter && e.parameter.action) || 'metrics';
+  try {
+    if (action === 'update')  return _json(handleUpdate_(body));
+    if (action === 'alfred')  return _json(handleAlfred_(body));
     if (action === 'metrics') return _json(handleMetrics_());
     return _json({error: 'unknown action: ' + action});
   } catch (err) {
