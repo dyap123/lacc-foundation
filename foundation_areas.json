@@ -1,43 +1,52 @@
 {
   "_canvas": {
-    "width": 1600,
-    "height": 1400,
-    "background": "#0b1220",
+    "width": 1700,
+    "height": 1700,
     "title": "LACC Foundation — Sequence Map",
-    "north_arrow": {"x": 1500, "y": 90}
+    "north_arrow": {"x": 1620, "y": 110}
   },
-  "_grid": {
-    "columns": ["A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z"],
-    "rows_top": 33,
-    "rows_bottom": 8,
-    "show_labels": true
-  },
+  "_path_of_travel": [
+    [690, 460], [720, 540], [820, 600], [780, 760], [780, 920],
+    [720, 1080], [780, 1180], [870, 1280], [950, 1430], [1100, 1530], [1240, 1620]
+  ],
   "areas": [
     {
       "section_id": "0",
-      "label": "Zone 0 — already poured",
+      "label": "Zone 0",
+      "annotation": "already poured",
       "interactive": false,
-      "outline_color": "#06b6d4",
-      "polygon": [[60, 60], [990, 60], [990, 460], [60, 460]],
-      "label_offset": [0, 0]
+      "outline_color": "#22d3ee",
+      "fill_hint": "cyan",
+      "polygon": [
+        [80, 80], [1140, 80], [1140, 240], [950, 240],
+        [950, 380], [80, 380]
+      ],
+      "label_offset": [-200, -50]
     },
     {
       "section_id": "4",
-      "label": "Zone 4 — already poured",
+      "label": "Zone 4",
+      "annotation": "already poured",
       "interactive": false,
-      "outline_color": "#eab308",
-      "polygon": [[60, 470], [990, 470], [990, 600], [60, 600]],
+      "outline_color": "#facc15",
+      "fill_hint": "yellow",
+      "polygon": [
+        [80, 380], [1170, 380], [1170, 460], [80, 460]
+      ],
       "phases": [
-        {"id": "Phase A", "anchor": [320, 510]},
-        {"id": "Phase B", "anchor": [700, 570]}
-      ]
+        {"id": "Phase A", "anchor": [240, 425]},
+        {"id": "Phase B", "anchor": [820, 425]}
+      ],
+      "label_offset": [-360, -10]
     },
     {
       "section_id": "1A",
       "label": "Sequence 1 — Area A",
       "interactive": true,
       "outline_color": "#3b82f6",
-      "polygon": [[1000, 90], [1110, 90], [1110, 460], [1000, 460]]
+      "polygon": [
+        [1150, 130], [1280, 130], [1280, 380], [1150, 380]
+      ]
     },
     {
       "section_id": "1B",
@@ -45,16 +54,18 @@
       "interactive": true,
       "outline_color": "#3b82f6",
       "polygon": [
-        [1000, 470], [1140, 470], [1140, 1070],
-        [1010, 1070], [1010, 980], [970, 980],
-        [970, 600], [1000, 600]
+        [950, 380], [1300, 380], [1300, 460],
+        [1170, 460], [1170, 980], [970, 980],
+        [970, 870], [870, 870], [870, 700],
+        [950, 700]
       ],
       "phases": [
-        {"id": "B", "anchor": [1075, 540]},
-        {"id": "A", "anchor": [1075, 700]},
-        {"id": "C", "anchor": [990, 870]},
-        {"id": "D", "anchor": [1075, 1020]}
-      ]
+        {"id": "Phase B", "anchor": [1080, 430]},
+        {"id": "Phase A", "anchor": [1080, 600]},
+        {"id": "Phase C", "anchor": [990, 800]},
+        {"id": "Phase D", "anchor": [1080, 950]}
+      ],
+      "label_offset": [10, -40]
     },
     {
       "section_id": "2A",
@@ -62,15 +73,17 @@
       "interactive": true,
       "outline_color": "#a855f7",
       "polygon": [
-        [600, 1090], [970, 1090], [970, 1340], [620, 1340],
-        [560, 1280], [560, 1170], [600, 1170]
+        [630, 1090], [1170, 1090], [1170, 1330],
+        [1130, 1500], [1170, 1620], [620, 1620],
+        [560, 1530], [520, 1380], [560, 1280],
+        [560, 1180], [630, 1180]
       ],
       "phases": [
-        {"id": "A", "anchor": [780, 1140]},
-        {"id": "B", "anchor": [880, 1200]},
-        {"id": "C", "anchor": [780, 1240]},
-        {"id": "D", "anchor": [900, 1310]},
-        {"id": "E", "anchor": [620, 1310]}
+        {"id": "Phase A", "anchor": [820, 1150]},
+        {"id": "Phase B", "anchor": [970, 1230]},
+        {"id": "Phase C", "anchor": [820, 1300]},
+        {"id": "Phase D", "anchor": [970, 1500]},
+        {"id": "Phase E", "anchor": [690, 1570]}
       ]
     },
     {
@@ -78,12 +91,15 @@
       "label": "Sequence 3 — Area A",
       "interactive": true,
       "outline_color": "#22c55e",
-      "polygon": [[1180, 1080], [1560, 1080], [1560, 1340], [1180, 1340]],
+      "polygon": [
+        [1230, 1080], [1620, 1080], [1620, 1620],
+        [1320, 1620], [1280, 1530], [1230, 1380]
+      ],
       "phases": [
-        {"id": "A", "anchor": [1280, 1130]},
-        {"id": "B", "anchor": [1380, 1130]},
-        {"id": "C", "anchor": [1480, 1180]},
-        {"id": "D", "anchor": [1380, 1300]}
+        {"id": "Phase A", "anchor": [1330, 1140]},
+        {"id": "Phase B", "anchor": [1480, 1230]},
+        {"id": "Phase C", "anchor": [1560, 1310]},
+        {"id": "Phase D", "anchor": [1480, 1500]}
       ]
     },
     {
@@ -91,11 +107,13 @@
       "label": "Sequence 3 — Area B",
       "interactive": true,
       "outline_color": "#16a34a",
-      "polygon": [[1290, 470], [1560, 470], [1560, 760], [1290, 760]],
+      "polygon": [
+        [1380, 460], [1620, 460], [1620, 850], [1380, 850]
+      ],
       "phases": [
-        {"id": "A", "anchor": [1400, 540]},
-        {"id": "B", "anchor": [1400, 650]},
-        {"id": "C", "anchor": [1400, 730]}
+        {"id": "Phase A", "anchor": [1500, 530]},
+        {"id": "Phase B", "anchor": [1500, 660]},
+        {"id": "Phase C", "anchor": [1500, 790]}
       ]
     },
     {
@@ -103,24 +121,27 @@
       "label": "Sequence 3 — Area C",
       "interactive": true,
       "outline_color": "#15803d",
-      "polygon": [[1150, 60], [1560, 60], [1560, 460], [1150, 460]],
+      "polygon": [
+        [1300, 80], [1620, 80], [1620, 460], [1300, 460]
+      ],
       "phases": [
-        {"id": "E", "anchor": [1380, 110]},
-        {"id": "D", "anchor": [1240, 160]},
-        {"id": "B", "anchor": [1500, 110]},
-        {"id": "C-N", "anchor": [1380, 280]},
-        {"id": "C-S", "anchor": [1380, 380]},
-        {"id": "A", "anchor": [1240, 290]}
+        {"id": "Phase E", "anchor": [1450, 130]},
+        {"id": "Phase D", "anchor": [1360, 200]},
+        {"id": "Phase B", "anchor": [1560, 130]},
+        {"id": "Phase C-N", "anchor": [1450, 280]},
+        {"id": "Phase C-S", "anchor": [1450, 380]},
+        {"id": "Phase A", "anchor": [1340, 320]}
       ]
     },
     {
       "section_id": "3D",
-      "label": "Sequence 3 — Area D · laydown",
+      "label": "Sequence 3 — Area D",
+      "annotation": "Leave out for laydown",
       "interactive": true,
       "outline_color": "#86efac",
-      "polygon": [[1150, 770], [1560, 770], [1560, 1070], [1150, 1070]],
-      "annotation": "Leave out for laydown"
+      "polygon": [
+        [1230, 850], [1620, 850], [1620, 1080], [1230, 1080]
+      ]
     }
-  ],
-  "_path_of_travel": [[1000, 970], [1100, 1000], [1140, 1080], [1180, 1120], [1280, 1180], [1380, 1240]]
+  ]
 }
