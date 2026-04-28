@@ -1,64 +1,126 @@
 {
-  "_image": {
-    "path": "foundation_sequence.png",
-    "width": 3278,
-    "height": 3541,
-    "note": "Polygon coords are in image pixel space. Refine the [[x,y], ...] points in this file to match the actual sequence outlines from the drawing."
+  "_canvas": {
+    "width": 1600,
+    "height": 1400,
+    "background": "#0b1220",
+    "title": "LACC Foundation — Sequence Map",
+    "north_arrow": {"x": 1500, "y": 90}
+  },
+  "_grid": {
+    "columns": ["A","B","C","D","E","F","G","H","J","K","L","M","N","P","Q","R","S","T","U","V","W","X","Y","Z"],
+    "rows_top": 33,
+    "rows_bottom": 8,
+    "show_labels": true
   },
   "areas": [
     {
-      "section_id": "1A",
-      "label": "Sequence 1 Area A",
-      "interactive": true,
-      "polygon": [[1750, 380], [2050, 380], [2050, 780], [1750, 780]]
-    },
-    {
-      "section_id": "1B",
-      "label": "Sequence 1 Area B",
-      "interactive": true,
-      "polygon": [[1750, 800], [2200, 800], [2200, 2180], [1750, 2180]]
-    },
-    {
-      "section_id": "2A",
-      "label": "Sequence 2 Area A",
-      "interactive": true,
-      "polygon": [[1480, 2240], [2300, 2240], [2300, 3320], [1480, 3320]]
-    },
-    {
-      "section_id": "3A",
-      "label": "Sequence 3 Area A",
-      "interactive": true,
-      "polygon": [[2680, 2160], [3200, 2160], [3200, 3030], [2680, 3030]]
-    },
-    {
-      "section_id": "3B",
-      "label": "Sequence 3 Area B",
-      "interactive": true,
-      "polygon": [[2880, 800], [3200, 800], [3200, 1530], [2880, 1530]]
-    },
-    {
-      "section_id": "3C",
-      "label": "Sequence 3 Area C",
-      "interactive": true,
-      "polygon": [[2050, 120], [3200, 120], [3200, 800], [2050, 800]]
-    },
-    {
-      "section_id": "3D",
-      "label": "Sequence 3 Area D — laydown",
-      "interactive": true,
-      "polygon": [[2580, 1530], [3200, 1530], [3200, 2160], [2580, 2160]]
-    },
-    {
       "section_id": "0",
-      "label": "Already poured (zone 0)",
+      "label": "Zone 0 — already poured",
       "interactive": false,
-      "polygon": [[300, 130], [1750, 130], [1750, 780], [300, 780]]
+      "outline_color": "#06b6d4",
+      "polygon": [[60, 60], [990, 60], [990, 460], [60, 460]],
+      "label_offset": [0, 0]
     },
     {
       "section_id": "4",
-      "label": "Already poured (zone 4)",
+      "label": "Zone 4 — already poured",
       "interactive": false,
-      "polygon": [[300, 780], [1750, 780], [1750, 1100], [300, 1100]]
+      "outline_color": "#eab308",
+      "polygon": [[60, 470], [990, 470], [990, 600], [60, 600]],
+      "phases": [
+        {"id": "Phase A", "anchor": [320, 510]},
+        {"id": "Phase B", "anchor": [700, 570]}
+      ]
+    },
+    {
+      "section_id": "1A",
+      "label": "Sequence 1 — Area A",
+      "interactive": true,
+      "outline_color": "#3b82f6",
+      "polygon": [[1000, 90], [1110, 90], [1110, 460], [1000, 460]]
+    },
+    {
+      "section_id": "1B",
+      "label": "Sequence 1 — Area B",
+      "interactive": true,
+      "outline_color": "#3b82f6",
+      "polygon": [
+        [1000, 470], [1140, 470], [1140, 1070],
+        [1010, 1070], [1010, 980], [970, 980],
+        [970, 600], [1000, 600]
+      ],
+      "phases": [
+        {"id": "B", "anchor": [1075, 540]},
+        {"id": "A", "anchor": [1075, 700]},
+        {"id": "C", "anchor": [990, 870]},
+        {"id": "D", "anchor": [1075, 1020]}
+      ]
+    },
+    {
+      "section_id": "2A",
+      "label": "Sequence 2 — Area A",
+      "interactive": true,
+      "outline_color": "#a855f7",
+      "polygon": [
+        [600, 1090], [970, 1090], [970, 1340], [620, 1340],
+        [560, 1280], [560, 1170], [600, 1170]
+      ],
+      "phases": [
+        {"id": "A", "anchor": [780, 1140]},
+        {"id": "B", "anchor": [880, 1200]},
+        {"id": "C", "anchor": [780, 1240]},
+        {"id": "D", "anchor": [900, 1310]},
+        {"id": "E", "anchor": [620, 1310]}
+      ]
+    },
+    {
+      "section_id": "3A",
+      "label": "Sequence 3 — Area A",
+      "interactive": true,
+      "outline_color": "#22c55e",
+      "polygon": [[1180, 1080], [1560, 1080], [1560, 1340], [1180, 1340]],
+      "phases": [
+        {"id": "A", "anchor": [1280, 1130]},
+        {"id": "B", "anchor": [1380, 1130]},
+        {"id": "C", "anchor": [1480, 1180]},
+        {"id": "D", "anchor": [1380, 1300]}
+      ]
+    },
+    {
+      "section_id": "3B",
+      "label": "Sequence 3 — Area B",
+      "interactive": true,
+      "outline_color": "#16a34a",
+      "polygon": [[1290, 470], [1560, 470], [1560, 760], [1290, 760]],
+      "phases": [
+        {"id": "A", "anchor": [1400, 540]},
+        {"id": "B", "anchor": [1400, 650]},
+        {"id": "C", "anchor": [1400, 730]}
+      ]
+    },
+    {
+      "section_id": "3C",
+      "label": "Sequence 3 — Area C",
+      "interactive": true,
+      "outline_color": "#15803d",
+      "polygon": [[1150, 60], [1560, 60], [1560, 460], [1150, 460]],
+      "phases": [
+        {"id": "E", "anchor": [1380, 110]},
+        {"id": "D", "anchor": [1240, 160]},
+        {"id": "B", "anchor": [1500, 110]},
+        {"id": "C-N", "anchor": [1380, 280]},
+        {"id": "C-S", "anchor": [1380, 380]},
+        {"id": "A", "anchor": [1240, 290]}
+      ]
+    },
+    {
+      "section_id": "3D",
+      "label": "Sequence 3 — Area D · laydown",
+      "interactive": true,
+      "outline_color": "#86efac",
+      "polygon": [[1150, 770], [1560, 770], [1560, 1070], [1150, 1070]],
+      "annotation": "Leave out for laydown"
     }
-  ]
+  ],
+  "_path_of_travel": [[1000, 970], [1100, 1000], [1140, 1080], [1180, 1120], [1280, 1180], [1380, 1240]]
 }

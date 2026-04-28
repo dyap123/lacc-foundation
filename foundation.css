@@ -30,16 +30,16 @@ body { display: flex; flex-direction: column; overflow: hidden; }
 .fnd-refresh:hover { background: rgba(99,179,237,0.18); }
 
 .fnd-shell { flex: 1; display: flex; min-height: 0; overflow: hidden; }
-.fnd-canvas-wrap { flex: 1; position: relative; overflow: auto; background: var(--bg-0); }
+.fnd-canvas-wrap { flex: 1; position: relative; overflow: hidden; background: var(--bg-0); display: flex; align-items: center; justify-content: center; }
 .fnd-canvas-wrap.fnd-error { display: flex; align-items: center; justify-content: center; color: var(--muted); padding: 40px; text-align: center; }
-.fnd-canvas { position: relative; display: inline-block; min-width: 100%; }
-.fnd-canvas img { display: block; max-width: none; user-select: none; -webkit-user-drag: none; }
-.fnd-canvas svg { position: absolute; left: 0; top: 0; pointer-events: none; }
-.fnd-canvas svg polygon { pointer-events: auto; cursor: pointer; transition: opacity 0.15s, stroke-width 0.15s; opacity: 0.45; }
-.fnd-canvas svg polygon:hover { opacity: 0.75; stroke-width: 6; }
-.fnd-canvas svg polygon.fnd-selected { opacity: 0.85; stroke-width: 8; }
-.fnd-canvas svg polygon.fnd-readonly { opacity: 0.18; cursor: default; }
-.fnd-canvas svg polygon.fnd-readonly:hover { opacity: 0.22; }
+.fnd-canvas { position: relative; width: 100%; height: 100%; max-width: 1800px; padding: 24px; box-sizing: border-box; }
+.fnd-canvas img { display: none; }
+.fnd-canvas svg { width: 100%; height: 100%; pointer-events: none; }
+.fnd-canvas svg polygon[data-section] { pointer-events: auto; cursor: pointer; transition: fill-opacity 0.15s, stroke-width 0.15s, filter 0.15s; }
+.fnd-canvas svg polygon[data-section]:hover { fill-opacity: 0.42 !important; stroke-width: 5; filter: drop-shadow(0 0 12px rgba(255,255,255,0.15)); }
+.fnd-canvas svg polygon[data-section].fnd-selected { fill-opacity: 0.55 !important; stroke-width: 6; filter: drop-shadow(0 0 18px rgba(96,165,250,0.4)); }
+.fnd-canvas svg polygon[data-section].fnd-readonly { cursor: default; }
+.fnd-canvas svg polygon[data-section].fnd-readonly:hover { fill-opacity: 0.10 !important; stroke-width: 3; filter: none; }
 
 .fnd-tooltip { position: fixed; pointer-events: none; z-index: 1000; background: rgba(15,23,42,0.96); border: 1px solid var(--line-2); padding: 10px 12px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); font-size: 12px; line-height: 1.45; color: var(--text); max-width: 280px; }
 .fnd-tooltip h4 { margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #f1f5f9; }

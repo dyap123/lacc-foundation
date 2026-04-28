@@ -25,8 +25,10 @@
 
   const state = {
     config: null,
-    image: null,
+    canvas: null,
+    grid: null,
     areas: [],
+    pathOfTravel: [],
     metricsBySection: {},
     selectedSection: null,
     pollTimer: null,
@@ -71,15 +73,19 @@
   // ── Init / loading ─────────────────────────────────────────────────────
   async function init() {
     try {
-      // Load config + polygons (both static, served by Pages).
       const [config, areasResp] = await Promise.all([
         fetch('config.json').then(r => r.json()).catch(() => ({})),
         fetch('foundation_areas.json').then(r => r.json()),
       ]);
       state.config = config;
-      state.image = areasResp._image;
+      state.canvas = areasResp._canvas || {width: 1600, height: 1400, background: '#0b1220'};
+      state.grid = areasResp._grid || null;
       state.areas = areasResp.areas || [];
-      renderImageAndOverlay();
+      state.pathOfTravel = areasResp._path_of_travel || [];
+      // Hide the legacy <img> tag — we render a fully synthesized site plan.
+      const img = $('fndImage');
+      if (img) img.style.display = 'none';
+      renderSitePlan();
 
       if (!state.config || !state.config.backend ||
           state.config.backend.indexOf('PASTE_YOUR_APPS_SCRIPT_URL') !== -1) {
@@ -95,66 +101,207 @@
     }
   }
 
-  function renderImageAndOverlay() {
-    const img = $('fndImage');
-    img.src = (state.image && state.image.path) || 'foundation_sequence.png';
-    img.onload = () => {
-      const svg = $('fndOverlay');
-      svg.setAttribute('viewBox', `0 0 ${img.naturalWidth} ${img.naturalHeight}`);
-      svg.setAttribute('width', img.naturalWidth);
-      svg.setAttribute('height', img.naturalHeight);
-      svg.style.width = img.clientWidth + 'px';
-      svg.style.height = img.clientHeight + 'px';
-      window.addEventListener('resize', () => {
-        svg.style.width = img.clientWidth + 'px';
-        svg.style.height = img.clientHeight + 'px';
-      });
-      drawPolygons();
-    };
-  }
-
-  function drawPolygons() {
+  // ── SVG site plan ──────────────────────────────────────────────────────
+  // Builds a clean, schematic top-down site plan from foundation_areas.json
+  // (no PDF screenshot). Each interactive sequence is a polygon whose fill
+  // reflects the current status; outline preserves the source-drawing color.
+  function renderSitePlan() {
     const svg = $('fndOverlay');
     while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-    state.areas.forEach((area) => {
-      const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      poly.setAttribute('points', area.polygon.map(p => p.join(',')).join(' '));
-      poly.setAttribute('data-section', area.section_id);
+    const W = state.canvas.width;
+    const H = state.canvas.height;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svg.style.width = '100%';
+    svg.style.height = '100%';
+    // Make the SVG occupy the canvas cleanly (no <img> behind it).
+    const wrap = $('fndCanvas');
+    if (wrap) {
+      wrap.style.width = '100%';
+      wrap.style.height = '100%';
+      wrap.style.minHeight = '0';
+    }
 
-      const row = state.metricsBySection[area.section_id] || null;
-      const indicator = row ? row.indicator : 'NEEDS POUR DATE';
+    // Background
+    const bg = svgEl('rect', {x: 0, y: 0, width: W, height: H, fill: state.canvas.background});
+    svg.appendChild(bg);
+
+    // Subtle dot grid
+    const grid = svgEl('g', {});
+    for (let x = 100; x < W; x += 100) {
+      for (let y = 100; y < H; y += 100) {
+        const d = svgEl('circle', {cx: x, cy: y, r: 1.2, fill: '#1e293b'});
+        grid.appendChild(d);
+      }
+    }
+    svg.appendChild(grid);
+
+    // Title
+    if (state.canvas.title) {
+      svg.appendChild(svgEl('text', {
+        x: 60, y: 32, fill: '#e2e8f0', 'font-size': 22, 'font-weight': 700,
+      }, state.canvas.title));
+    }
+
+    // North arrow (top-right)
+    if (state.canvas.north_arrow) {
+      const na = state.canvas.north_arrow;
+      const g = svgEl('g', {transform: `translate(${na.x},${na.y})`});
+      g.appendChild(svgEl('circle', {r: 28, fill: 'none', stroke: '#475569', 'stroke-width': 1.5}));
+      g.appendChild(svgEl('polygon', {points: '0,-26 -8,8 0,2 8,8', fill: '#cbd5e1'}));
+      g.appendChild(svgEl('text', {y: -32, 'text-anchor': 'middle', fill: '#94a3b8',
+                                     'font-size': 11, 'font-weight': 600}, 'N'));
+      svg.appendChild(g);
+    }
+
+    // Path of travel (dashed connector)
+    if (state.pathOfTravel && state.pathOfTravel.length > 1) {
+      const d = state.pathOfTravel.map((p, i) =>
+        (i === 0 ? 'M' : 'L') + p[0] + ',' + p[1]).join(' ');
+      svg.appendChild(svgEl('path', {
+        d: d, stroke: '#334155', 'stroke-width': 6, fill: 'none',
+        'stroke-dasharray': '14 10', 'stroke-linecap': 'round',
+      }));
+    }
+
+    // Areas — drawn in order; non-interactive (already-poured) first
+    const sorted = state.areas.slice().sort((a, b) =>
+      (a.interactive ? 1 : 0) - (b.interactive ? 1 : 0));
+    sorted.forEach((area) => drawArea(svg, area));
+
+    // Legend bottom-left
+    drawLegend(svg, 60, H - 110);
+  }
+
+  function svgEl(name, attrs, text) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', name);
+    Object.keys(attrs || {}).forEach((k) => el.setAttribute(k, attrs[k]));
+    if (text != null) el.textContent = text;
+    return el;
+  }
+
+  function drawArea(svg, area) {
+    const points = area.polygon.map(p => p.join(',')).join(' ');
+    const indicator = (state.metricsBySection[area.section_id] || {}).indicator
+                       || 'NEEDS POUR DATE';
+    const c = area.interactive
+      ? statusColors(indicator)
+      : {fill: READONLY_FILL, stroke: area.outline_color || READONLY_FILL};
+
+    // Translucent fill polygon (interactive)
+    const poly = svgEl('polygon', {
+      points: points,
+      fill: c.fill,
+      'fill-opacity': area.interactive ? 0.22 : 0.10,
+      stroke: area.outline_color || c.stroke,
+      'stroke-width': 3,
+      'stroke-linejoin': 'round',
+      'data-section': area.section_id,
+    });
+    if (!area.interactive) poly.classList.add('fnd-readonly');
+    if (area.interactive) {
+      poly.addEventListener('mousemove', (e) => showTooltip(e, area));
+      poly.addEventListener('mouseleave', hideTooltip);
+      poly.addEventListener('click', () => openPanel(area.section_id));
+    }
+    svg.appendChild(poly);
+
+    // Centroid label (section_id, large)
+    const cx = area.polygon.reduce((s, p) => s + p[0], 0) / area.polygon.length;
+    const cy = area.polygon.reduce((s, p) => s + p[1], 0) / area.polygon.length;
+    const off = area.label_offset || [0, 0];
+    const labelText = (area.section_id === '0' || area.section_id === '4')
+      ? 'Zone ' + area.section_id : area.section_id;
+    svg.appendChild(svgEl('text', {
+      x: cx + off[0],
+      y: cy + off[1],
+      'text-anchor': 'middle',
+      'dominant-baseline': 'middle',
+      fill: area.interactive ? '#f8fafc' : '#94a3b8',
+      stroke: '#0b1220', 'stroke-width': 5, 'paint-order': 'stroke',
+      'font-size': area.interactive ? 64 : 38,
+      'font-weight': 800,
+      'font-family': 'system-ui, sans-serif',
+      'pointer-events': 'none',
+    }, labelText));
+
+    // Section label below the section_id (small italic)
+    if (area.label && area.interactive) {
+      svg.appendChild(svgEl('text', {
+        x: cx + off[0],
+        y: cy + off[1] + 50,
+        'text-anchor': 'middle',
+        fill: '#94a3b8',
+        'font-size': 14,
+        'font-weight': 500,
+        'pointer-events': 'none',
+      }, area.label));
+    }
+    if (area.annotation) {
+      svg.appendChild(svgEl('text', {
+        x: cx + off[0],
+        y: cy + off[1] + 50,
+        'text-anchor': 'middle',
+        fill: '#86efac',
+        'font-size': 14,
+        'font-style': 'italic',
+        'pointer-events': 'none',
+      }, area.annotation));
+    }
+
+    // Phase markers
+    if (area.phases) {
+      area.phases.forEach((p) => {
+        svg.appendChild(svgEl('text', {
+          x: p.anchor[0],
+          y: p.anchor[1],
+          'text-anchor': 'middle',
+          fill: '#cbd5e1',
+          stroke: '#0b1220', 'stroke-width': 3, 'paint-order': 'stroke',
+          'font-size': 18,
+          'font-weight': 600,
+          'pointer-events': 'none',
+        }, p.id));
+      });
+    }
+  }
+
+  function drawLegend(svg, x, y) {
+    const items = [
+      ['#22c55e', 'READY'],
+      ['#f59e0b', 'MONITORING'],
+      ['#ef4444', 'NEEDS POUR DATE'],
+      ['#64748b', 'ALREADY POURED'],
+    ];
+    const g = svgEl('g', {transform: `translate(${x},${y})`});
+    g.appendChild(svgEl('rect', {x: -10, y: -22, width: 290, height: 100,
+      rx: 8, fill: '#0f172a', 'fill-opacity': 0.7,
+      stroke: '#1e293b', 'stroke-width': 1}));
+    g.appendChild(svgEl('text', {x: 0, y: -2, fill: '#cbd5e1',
+      'font-size': 11, 'font-weight': 700, 'letter-spacing': 1.2}, 'LEGEND'));
+    items.forEach((it, i) => {
+      const yy = 18 + i * 18;
+      g.appendChild(svgEl('rect', {x: 0, y: yy - 8, width: 16, height: 10, rx: 2,
+        fill: it[0], 'fill-opacity': 0.65, stroke: it[0], 'stroke-width': 1}));
+      g.appendChild(svgEl('text', {x: 24, y: yy, fill: '#e2e8f0',
+        'font-size': 11}, it[1]));
+    });
+    svg.appendChild(g);
+  }
+
+  function recolorAreas() {
+    document.querySelectorAll('#fndOverlay polygon[data-section]').forEach((poly) => {
+      const sid = poly.getAttribute('data-section');
+      const area = state.areas.find(a => a.section_id === sid);
+      if (!area) return;
+      const indicator = (state.metricsBySection[sid] || {}).indicator
+                         || 'NEEDS POUR DATE';
       const c = area.interactive
         ? statusColors(indicator)
-        : {fill: READONLY_FILL, stroke: READONLY_FILL};
+        : {fill: READONLY_FILL, stroke: area.outline_color || READONLY_FILL};
       poly.setAttribute('fill', c.fill);
-      poly.setAttribute('stroke', c.stroke);
-      poly.setAttribute('stroke-width', '4');
-      if (!area.interactive) poly.classList.add('fnd-readonly');
-
-      const cx = area.polygon.reduce((s, p) => s + p[0], 0) / area.polygon.length;
-      const cy = area.polygon.reduce((s, p) => s + p[1], 0) / area.polygon.length;
-      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', cx);
-      label.setAttribute('y', cy);
-      label.setAttribute('text-anchor', 'middle');
-      label.setAttribute('dominant-baseline', 'middle');
-      label.setAttribute('fill', '#fff');
-      label.setAttribute('stroke', '#0f172a');
-      label.setAttribute('stroke-width', '4');
-      label.setAttribute('paint-order', 'stroke');
-      label.setAttribute('font-size', '54');
-      label.setAttribute('font-weight', '700');
-      label.style.pointerEvents = 'none';
-      label.textContent = area.section_id;
-
-      if (area.interactive) {
-        poly.addEventListener('mousemove', (e) => showTooltip(e, area));
-        poly.addEventListener('mouseleave', hideTooltip);
-        poly.addEventListener('click', () => openPanel(area.section_id));
-      }
-      svg.appendChild(poly);
-      svg.appendChild(label);
+      poly.setAttribute('stroke', area.outline_color || c.stroke);
     });
   }
 
@@ -316,7 +463,7 @@
       if (j.error) throw new Error(j.error);
       if (j.row_data) state.metricsBySection[state.selectedSection] = j.row_data;
       else await refresh(true);
-      drawPolygons(); updateStats(); openPanel(state.selectedSection);
+      recolorAreas(); updateStats(); openPanel(state.selectedSection);
       btn.textContent = 'Saved ✓';
       setTimeout(() => { btn.textContent = 'Save'; btn.disabled = false; }, 1200);
     } catch (err) {
@@ -335,7 +482,7 @@
     try {
       const j = await backendGet('metrics');
       state.metricsBySection = (j && j.by_section) || {};
-      drawPolygons(); updateStats();
+      recolorAreas(); updateStats();
       if (state.selectedSection && force) openPanel(state.selectedSection);
     } catch (err) {
       console.warn('refresh failed', err);
