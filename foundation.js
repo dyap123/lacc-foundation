@@ -170,68 +170,41 @@
 
     svg.appendChild(defs);
 
-    // Aurora background
-    svg.appendChild(svgEl('rect', {x: 0, y: 0, width: W, height: H, fill: `url(#${auroraId})`}));
-
-    // Subtle radial vignette to deepen edges
+    // Soft aurora background (very subtle now)
     svg.appendChild(svgEl('rect', {
       x: 0, y: 0, width: W, height: H,
-      fill: 'black', 'fill-opacity': 0.18,
-      style: 'mix-blend-mode: multiply',
+      fill: `url(#${auroraId})`, 'fill-opacity': 0.45,
     }));
 
-    // Soft dot grid
-    const grid = svgEl('g', {opacity: 0.55});
-    for (let x = 80; x < W; x += 80) {
-      for (let y = 80; y < H; y += 80) {
-        grid.appendChild(svgEl('circle', {cx: x, cy: y, r: 1, fill: '#1e293b'}));
+    // Minimal dot grid for depth — barely visible
+    const grid = svgEl('g', {opacity: 0.4});
+    for (let x = 100; x < W; x += 100) {
+      for (let y = 100; y < H; y += 100) {
+        grid.appendChild(svgEl('circle', {cx: x, cy: y, r: 0.8, fill: '#1e293b'}));
       }
     }
     svg.appendChild(grid);
 
-    // Larger faint cross marks at every 4th grid point for depth
-    const crosses = svgEl('g', {opacity: 0.4, stroke: '#1e293b', 'stroke-width': 0.8});
-    for (let x = 320; x < W; x += 320) {
-      for (let y = 320; y < H; y += 320) {
-        crosses.appendChild(svgEl('line', {x1: x - 8, y1: y, x2: x + 8, y2: y}));
-        crosses.appendChild(svgEl('line', {x1: x, y1: y - 8, x2: x, y2: y + 8}));
-      }
-    }
-    svg.appendChild(crosses);
-
-    // Title
-    if (state.canvas.title) {
-      svg.appendChild(svgEl('text', {
-        x: 60, y: 32, fill: '#e2e8f0', 'font-size': 22, 'font-weight': 700,
-      }, state.canvas.title));
-    }
-
-    // North arrow (top-right)
+    // North arrow only — title lives in the toolbar above
     if (state.canvas.north_arrow) {
       const na = state.canvas.north_arrow;
-      const g = svgEl('g', {transform: `translate(${na.x},${na.y})`});
-      g.appendChild(svgEl('circle', {r: 28, fill: 'none', stroke: '#475569', 'stroke-width': 1.5}));
-      g.appendChild(svgEl('polygon', {points: '0,-26 -8,8 0,2 8,8', fill: '#cbd5e1'}));
-      g.appendChild(svgEl('text', {y: -32, 'text-anchor': 'middle', fill: '#94a3b8',
-                                     'font-size': 11, 'font-weight': 600}, 'N'));
+      const g = svgEl('g', {transform: `translate(${na.x},${na.y})`, opacity: 0.55});
+      g.appendChild(svgEl('circle', {r: 22, fill: 'none', stroke: '#475569', 'stroke-width': 1}));
+      g.appendChild(svgEl('polygon', {points: '0,-18 -5,4 0,1 5,4', fill: '#94a3b8'}));
+      g.appendChild(svgEl('text', {y: -28, 'text-anchor': 'middle', fill: '#64748b',
+                                     'font-size': 9, 'font-weight': 500,
+                                     'letter-spacing': '0.1em'}, 'N'));
       svg.appendChild(g);
     }
 
-    // Path of travel (dashed flowing connector — drawn UNDER the polygons)
+    // Path of travel — fine dashed connector
     if (state.pathOfTravel && state.pathOfTravel.length > 1) {
       const d = state.pathOfTravel.map((p, i) =>
         (i === 0 ? 'M' : 'L') + p[0] + ',' + p[1]).join(' ');
-      // Glow underlayer
       svg.appendChild(svgEl('path', {
-        d: d, stroke: '#475569', 'stroke-width': 18, fill: 'none',
-        'stroke-linecap': 'round', 'stroke-opacity': 0.18,
-        filter: 'url(#glow-outer)',
-      }));
-      // Main dashed line
-      svg.appendChild(svgEl('path', {
-        d: d, stroke: '#64748b', 'stroke-width': 5, fill: 'none',
-        'stroke-dasharray': '18 14', 'stroke-linecap': 'round',
-        'stroke-opacity': 0.7,
+        d: d, stroke: '#475569', 'stroke-width': 1.5, fill: 'none',
+        'stroke-dasharray': '6 8', 'stroke-linecap': 'round',
+        'stroke-opacity': 0.55,
       }));
     }
 
@@ -259,36 +232,26 @@
       ? statusColors(indicator)
       : {fill: READONLY_FILL, stroke: area.outline_color || READONLY_FILL};
 
-    // 1) Backdrop polygon — radial gradient base for depth
-    if (area.interactive) {
-      svg.appendChild(svgEl('polygon', {
-        points: points,
-        fill: `url(#grad-${area.section_id})`,
-        'fill-opacity': 0.45,
-        stroke: 'none',
-        'pointer-events': 'none',
-      }));
-    } else {
-      svg.appendChild(svgEl('polygon', {
-        points: points,
-        fill: '#1e293b',
-        'fill-opacity': 0.55,
-        stroke: 'none',
-        'pointer-events': 'none',
-      }));
-    }
+    // 1) Subtle backdrop — flat dark fill, no gradient
+    svg.appendChild(svgEl('polygon', {
+      points: points,
+      fill: '#0f172a',
+      'fill-opacity': area.interactive ? 0.6 : 0.4,
+      stroke: 'none',
+      'pointer-events': 'none',
+    }));
 
     // 2) Status fill polygon (the interactive one — receives hover/click)
     const poly = svgEl('polygon', {
       points: points,
       fill: c.fill,
-      'fill-opacity': area.interactive ? 0.22 : 0.10,
-      stroke: area.outline_color || c.stroke,
-      'stroke-width': 3,
+      'fill-opacity': area.interactive ? 0.13 : 0.06,
+      stroke: c.stroke,
+      'stroke-width': 1.2,
+      'stroke-opacity': 0.9,
       'stroke-linejoin': 'round',
       'stroke-linecap': 'round',
       'data-section': area.section_id,
-      filter: area.interactive ? 'url(#glow)' : '',
     });
     if (!area.interactive) poly.classList.add('fnd-readonly');
     // Pulse animation on attention-needing sections
@@ -303,114 +266,107 @@
     }
     svg.appendChild(poly);
 
-    // 3) Outline stroke on top — sharper, color = sequence color
+    // 3) Subtle outline accent in the original sequence color
     svg.appendChild(svgEl('polygon', {
       points: points,
       fill: 'none',
       stroke: area.outline_color || c.stroke,
-      'stroke-width': area.interactive ? 2.5 : 1.6,
-      'stroke-opacity': area.interactive ? 0.9 : 0.45,
+      'stroke-width': 1,
+      'stroke-opacity': area.interactive ? 0.4 : 0.25,
       'stroke-linejoin': 'round',
+      'stroke-dasharray': area.interactive ? '0' : '4 6',
       'pointer-events': 'none',
     }));
 
-    // 4) Centroid label (section_id, large, gradient-tinted)
+    // 4) Centroid label — refined, lower-weight, no shouty stroke
     const cx = area.polygon.reduce((s, p) => s + p[0], 0) / area.polygon.length;
     const cy = area.polygon.reduce((s, p) => s + p[1], 0) / area.polygon.length;
     const off = area.label_offset || [0, 0];
-    const labelText = (area.section_id === '0' || area.section_id === '4')
-      ? 'Zone ' + area.section_id : area.section_id;
+    let labelText = area.section_id;
+    let labelSize = 32;
+    let labelWeight = 600;
+    if (area.section_id === '4') { labelText = 'Zone 4'; labelSize = 24; }
+    if (!area.interactive) { labelSize = 20; labelWeight = 500; }
+    // Section ID — subtle, refined
     svg.appendChild(svgEl('text', {
       x: cx + off[0],
       y: cy + off[1],
       'text-anchor': 'middle',
       'dominant-baseline': 'middle',
-      fill: area.interactive ? '#f8fafc' : '#cbd5e1',
-      stroke: '#050a1a', 'stroke-width': 6, 'paint-order': 'stroke',
-      'font-size': area.interactive ? 84 : 44,
-      'font-weight': 900,
-      'font-family': '-apple-system, system-ui, sans-serif',
-      'letter-spacing': '-0.02em',
+      fill: area.interactive ? '#f8fafc' : '#94a3b8',
+      'font-size': labelSize,
+      'font-weight': labelWeight,
+      'font-family': '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif',
+      'letter-spacing': '-0.015em',
       'pointer-events': 'none',
-      filter: area.interactive ? 'url(#glow)' : '',
+      opacity: area.interactive ? 0.95 : 0.7,
     }, labelText));
 
-    if (area.label && area.interactive) {
+    // Label sub-text — even smaller, muted
+    if (area.label && area.interactive && area.label !== area.section_id) {
       svg.appendChild(svgEl('text', {
         x: cx + off[0],
-        y: cy + off[1] + 56,
+        y: cy + off[1] + 22,
         'text-anchor': 'middle',
-        fill: '#94a3b8',
-        stroke: '#050a1a', 'stroke-width': 3, 'paint-order': 'stroke',
-        'font-size': 16,
-        'font-weight': 500,
+        fill: '#64748b',
+        'font-size': 11,
+        'font-weight': 400,
+        'letter-spacing': '0.02em',
         'pointer-events': 'none',
       }, area.label));
     }
     if (area.annotation) {
       svg.appendChild(svgEl('text', {
         x: cx + off[0],
-        y: cy + off[1] + (area.interactive ? 78 : 38),
+        y: cy + off[1] + (area.label && area.interactive ? 40 : 22),
         'text-anchor': 'middle',
-        fill: area.interactive ? '#86efac' : '#94a3b8',
-        stroke: '#050a1a', 'stroke-width': 3, 'paint-order': 'stroke',
-        'font-size': 14,
-        'font-style': 'italic',
-        'font-weight': 500,
+        fill: area.interactive ? '#86efac' : '#64748b',
+        'font-size': 10,
+        'font-weight': 400,
+        'letter-spacing': '0.04em',
+        'text-transform': 'uppercase',
         'pointer-events': 'none',
+        opacity: 0.85,
       }, area.annotation));
     }
 
-    // 5) Phase markers — small pill-style chips
+    // 5) Phase markers — minimal text, no pills
     if (area.phases) {
       area.phases.forEach((p) => {
-        const w = (p.id.length * 7) + 16;
-        const h = 18;
-        const px = p.anchor[0] - w / 2;
-        const py = p.anchor[1] - h / 2;
-        svg.appendChild(svgEl('rect', {
-          x: px, y: py, width: w, height: h, rx: 9,
-          fill: '#0f172a', 'fill-opacity': 0.7,
-          stroke: area.outline_color || '#475569',
-          'stroke-opacity': 0.6, 'stroke-width': 1,
-          'pointer-events': 'none',
-        }));
         svg.appendChild(svgEl('text', {
-          x: p.anchor[0], y: p.anchor[1] + 1,
-          'text-anchor': 'middle', 'dominant-baseline': 'middle',
-          fill: '#cbd5e1', 'font-size': 11, 'font-weight': 600,
+          x: p.anchor[0],
+          y: p.anchor[1],
+          'text-anchor': 'middle',
+          'dominant-baseline': 'middle',
+          fill: '#94a3b8',
+          'font-size': 10,
+          'font-weight': 500,
+          'letter-spacing': '0.06em',
           'pointer-events': 'none',
-        }, p.id));
+          opacity: 0.7,
+        }, p.id.replace(/^Phase\s+/i, '').toUpperCase()));
       });
     }
   }
 
   function drawLegend(svg, x, y) {
     const items = [
-      ['#22c55e', 'READY'],
-      ['#f59e0b', 'MONITORING'],
-      ['#ef4444', 'NEEDS POUR DATE'],
-      ['#64748b', 'ALREADY POURED'],
+      ['#22c55e', 'Ready'],
+      ['#f59e0b', 'Monitoring'],
+      ['#ef4444', 'Needs Date'],
+      ['#64748b', 'Already Poured'],
     ];
     const g = svgEl('g', {transform: `translate(${x},${y})`});
-    g.appendChild(svgEl('rect', {
-      x: -14, y: -26, width: 250, height: 110, rx: 12,
-      fill: '#0f172a', 'fill-opacity': 0.72,
-      stroke: 'rgba(148,163,184,0.18)', 'stroke-width': 1,
-    }));
-    g.appendChild(svgEl('text', {
-      x: 0, y: -6, fill: '#94a3b8',
-      'font-size': 10, 'font-weight': 700, 'letter-spacing': 1.4,
-    }, 'STATUS'));
     items.forEach((it, i) => {
-      const yy = 18 + i * 20;
-      g.appendChild(svgEl('rect', {
-        x: 0, y: yy - 8, width: 16, height: 10, rx: 3,
-        fill: it[0], 'fill-opacity': 0.85,
+      const yy = i * 22;
+      g.appendChild(svgEl('circle', {
+        cx: 6, cy: yy, r: 4,
+        fill: it[0], 'fill-opacity': 0.95,
       }));
       g.appendChild(svgEl('text', {
-        x: 26, y: yy + 2, fill: '#e2e8f0',
-        'font-size': 11, 'font-weight': 500,
+        x: 18, y: yy + 4, fill: '#94a3b8',
+        'font-size': 11, 'font-weight': 400,
+        'letter-spacing': '0.02em',
       }, it[1]));
     });
     svg.appendChild(g);
