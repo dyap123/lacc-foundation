@@ -11,17 +11,40 @@
   ],
   "areas": [
     {
-      "section_id": "0",
-      "label": "Zone 0",
-      "annotation": "already poured",
-      "interactive": false,
+      "section_id": "CUP Area A",
+      "label": "CUP Area A",
+      "interactive": true,
       "outline_color": "#22d3ee",
-      "fill_hint": "cyan",
       "polygon": [
-        [80, 80], [1140, 80], [1140, 240], [950, 240],
-        [950, 380], [80, 380]
-      ],
-      "label_offset": [-200, -50]
+        [80, 80], [620, 80], [620, 230], [80, 230]
+      ]
+    },
+    {
+      "section_id": "CUP Area B",
+      "label": "CUP Area B",
+      "interactive": true,
+      "outline_color": "#22d3ee",
+      "polygon": [
+        [620, 80], [1140, 80], [1140, 230], [620, 230]
+      ]
+    },
+    {
+      "section_id": "CUP Area C",
+      "label": "CUP Area C",
+      "interactive": true,
+      "outline_color": "#22d3ee",
+      "polygon": [
+        [80, 230], [520, 230], [520, 380], [80, 380]
+      ]
+    },
+    {
+      "section_id": "CUP Area D",
+      "label": "CUP Area D",
+      "interactive": true,
+      "outline_color": "#22d3ee",
+      "polygon": [
+        [520, 230], [950, 230], [950, 380], [520, 380]
+      ]
     },
     {
       "section_id": "4",
